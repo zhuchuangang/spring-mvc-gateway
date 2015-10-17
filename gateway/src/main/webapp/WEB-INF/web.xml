@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         version="3.1">
+
+    <display-name>packer service</display-name>
+
+    <!-- Spring ApplicationContext配置文件的路径,可使用通配符,多个路径用,号分隔此参数用于后面的Spring Context Loader -->
+    <!--spring会从WEB-INF目录下去找spring的配置文件，并且spring的配置文件名是applicationContext.xml，不用默认文件需要如下配置-->
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>
+            classpath:META-INF/spring/spring-config*.xml
+        </param-value>
+    </context-param>
+
+    <!-- logback -->
+    <context-param>
+        <param-name>logbackConfigLocation</param-name>
+        <param-value>classpath:META-INF/logback/logback.xml</param-value>
+    </context-param>
+
+
+    <!-- ====================================================================== -->
+    <!--                             Listeners                                  -->
+    <!-- ====================================================================== -->
+    <!-- 定义LOGBACK监听器 -->
+    <listener>
+        <listener-class>ch.qos.logback.ext.spring.web.LogbackConfigListener</listener-class>
+    </listener>
+
+    <!--Spring ApplicationContext 载入 -->
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+    <!-- Spring 刷新Introspector防止内存泄露 -->
+    <listener>
+        <listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
+    </listener>
+
+    <!-- ====================================================================== -->
+    <!--                             Servlets                                   -->
+    <!-- ====================================================================== -->
+    <!--设置spring mvc入口，spring会加载WEB-INF下的以dispatcher-servlet.xml命名的spring配置文件，其中dispatcher为servlet名称-->
+    <servlet>
+        <servlet-name>dispatcher</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <!--<init-param>-->
+        <!--<param-name>contextConfigLocation</param-name>-->
+        <!--<param-value>/WEB-INF/dispatcher-servlet.xml</param-value>-->
+        <!--</init-param>-->
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>dispatcher</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+
+    <!--设置首页-->
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+
+
+    <!-- ====================================================================== -->
+    <!--                             filters                                   -->
+    <!-- ====================================================================== -->
+
+    <filter>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <url-pattern>*</url-pattern>
+        <!--<url-pattern>/spring_security_login</url-pattern>-->
+        <!--<url-pattern>/j_spring_security_check</url-pattern>-->
+        <!--<url-pattern>/j_spring_security_logout</url-pattern>-->
+    </filter-mapping>
+
+    <!-- Character Encoding filter -->
+    <filter>
+        <filter-name>encodingFilter</filter-name>
+        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+        <init-param>
+            <param-name>forceEncoding</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>encodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+</web-app>
+

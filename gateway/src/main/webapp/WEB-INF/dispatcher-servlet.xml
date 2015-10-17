@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <!--扫描标注@Component, @Repository,@Service, @Controller的类-->
+    <context:component-scan base-package="com.szss.gateway">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+        <context:include-filter type="annotation" expression="org.springframework.web.bind.annotation.RestController"/>
+    </context:component-scan>
+
+    <!--开启mvc支持，并开启spring model的数据验证-->
+    <mvc:annotation-driven validator="validator"/>
+
+    <!--收到相应请求后直接选择相应的视图返回-->
+    <mvc:view-controller path="/index.html"/>
+
+    <!--逻辑静态资源路径到物理静态资源路径的支持-->
+    <!--<mvc:resources mapping="/js/**" location="/js/" cache-period="31556926"/>-->
+    <!--<mvc:resources mapping="/style/**" location="/style/" cache-period="31556926"/>-->
+
+    <!--当在 web.xml 中 DispatcherServlet 使用<url-pattern>/</url-pattern> 映射时,能映射静态资源
+    (当 Spring Web MVC 框架没有处理请求对应的控制器时(如一些静态资源),转交给默认的Servlet来响应静态文件,否则报 404 找不到资源错误,)-->
+    <mvc:default-servlet-handler/>
+
+
+    <!--用于支持 Servlet、JSP 视图解析-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <!--prefix 和 suffix:查找视图页面的前缀和后缀-->
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <!-- 以下 validator  ConversionService 在使用 mvc:annotation-driven 会 自动注册-->
+    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+        <!--<property name="providerClass" value="org.hibernate.validator.HibernateValidator"/>-->
+        <!-- 如果不加默认到 使用classpath下的 ValidationMessages.properties -->
+        <property name="validationMessageSource" ref="messageSource"/>
+    </bean>
+
+    <!-- 国际化的消息资源文件（本系统中主要用于显示/错误消息定制） -->
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basenames">
+            <list>
+                <!-- 在web环境中一定要定位到classpath 否则默认到当前web应用下找  -->
+                <value>classpath:messages</value>
+                <value>classpath:org/hibernate/validator/ValidationMessages</value>
+            </list>
+        </property>
+        <property name="useCodeAsDefaultMessage" value="false"/>
+        <property name="defaultEncoding" value="UTF-8"/>
+        <property name="cacheSeconds" value="60"/>
+    </bean>
+
+
+    <bean id="stringConverter" class="org.springframework.http.converter.StringHttpMessageConverter">
+        <property name="supportedMediaTypes">
+            <list>
+                <value>text/plain;charset=UTF-8</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="jsonConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
+    <bean id="xmlConverter" class="org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter"/>
+
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+        <property name="messageConverters">
+            <list>
+                <ref bean="stringConverter"/>
+                <ref bean="jsonConverter"/>
+                <ref bean="xmlConverter"/>
+            </list>
+        </property>
+    </bean>
+
+</beans>
