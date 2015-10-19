@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 /**
@@ -18,8 +19,8 @@ public class ApiGatewayController {
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public String test(@ModelAttribute("data")String data) {
-        System.out.println(data);
-        return "success";
+    public String test(@RequestBody User user) {
+        System.out.println("User name:"+user.getName()+" password:"+user.getPassword());
+        return "true";
     }
 }
