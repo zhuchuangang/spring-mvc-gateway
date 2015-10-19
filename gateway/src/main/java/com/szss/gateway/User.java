@@ -8,6 +8,7 @@ import java.io.Serializable;
 public class User implements Serializable {
     private String name;
     private String password;
+    private User manager;
 
     public String getPassword() {
         return password;
@@ -23,5 +24,13 @@ public class User implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public User getManager() {
+        return manager;
+    }
+
+    public void setManager(User manager) {
+        this.manager = manager;
     }
 }

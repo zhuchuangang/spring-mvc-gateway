@@ -67,6 +67,7 @@
 
     <bean id="jsonConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
     <bean id="xmlConverter" class="org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter"/>
+    <bean id="formConverter" class="org.springframework.http.converter.FormHttpMessageConverter"/>
 
     <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
         <property name="messageConverters">
@@ -74,6 +75,7 @@
                 <ref bean="stringConverter"/>
                 <ref bean="jsonConverter"/>
                 <ref bean="xmlConverter"/>
+                <ref bean="formConverter"/>
             </list>
         </property>
     </bean>
